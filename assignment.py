@@ -19,7 +19,7 @@ def random_postcode():
     postcode_data['latitude'] = data['result']['latitude']
     postcode_data['city'] = data['result']['admin_district']
 
-    print(postcode_data)
+    return postcode_data
 
 
 def weather_info():
@@ -31,6 +31,32 @@ def weather_info():
             print("{0} : {1}".format(key, weatherConditions[key]))
 
 
-random_postcode()
+def weather_lookup(postcode_data):
+    print(postcode_data)
+    latitude = str(postcode_data['latitude'])
+    longitude = str(postcode_data['longitude'])
+    url = "https://"+"api.met.no/weatherapi/locationforecast/2.0/compact?lat="+latitude+"&lon="+longitude
+    print(url)
+
+    r = requests.get(url)
+    print(r.text)
+def main():
+    print("Welcome to the UK Weather Forecast")
+    print("Please enter an option from the following list:")
+    print("1. Enter a postcode")
+    print("2. Generate a random postcode")
+    user_input = input()
+
+    try:
+        user_input = int(user_input)
+    except ValueError:
+        print("error")
+
+    if user_input == 2:
+        data = random_postcode()
+        weather_lookup(data)
+
+
+main()
 
 
