@@ -14,11 +14,16 @@ def random_postcode():
 
 
 def user_postcode(input_postcode):
-    r = requests.get("https://api.postcodes.io/postcodes/"+input_postcode)
-    data = r.json()
-    data = data['result']
+    try:
+        r = requests.get("https://api.postcodes.io/postcodes/" + input_postcode)
+        data = r.json()
+        data = data['result']
+    except KeyError:
+        error_message(3)
+        return False
 
     if not data['longitude'] or not data['latitude']:
+        error_message(1)
         return False
 
     return data
@@ -39,19 +44,29 @@ def weather_lookup(postcode_data):
 
 
 def print_info(postcode_data, weather_data, weather_units):
-    print("")
-    print("Postcode Lookup Info")
+    print("\nPostcode Lookup Info")
     print("Country: {0}".format(postcode_data['country']))
     print("City: {0}".format(postcode_data['admin_district']))
     print("Postcode: {0}".format(postcode_data['postcode']))
     print("Latitude: {0}".format(postcode_data['latitude']))
     print("Longitude: {0}".format(postcode_data['longitude']))
 
-    print("")
-    print("Weather Data Info")
+    print("\nWeather Data Info")
     print("Time: {0}".format(weather_data['time']))
     print("Temperature: {0}{1}".format(weather_data['temperature_2m'], weather_units['temperature_2m']))
     print("Wind Speed: {0}{1}".format(weather_data['wind_speed_10m'], weather_units['wind_speed_10m']))
+
+
+def error_message(number):
+    print("\nError Message:", number)
+    if number == 1:
+        print("A postcode has been entered that does not have a valid latitude and longitude.")
+        print("This is an issue with the API and there is no workaround.")
+        print("Please pick another postcode.\n")
+    elif number == 2:
+        print("You have not entered a valid number for this input.\n")
+    elif number == 3:
+        print("You have not entered a valid postcode.\n")
 
 
 def main():
@@ -64,23 +79,25 @@ def main():
     try:
         user_input = int(user_input)
     except ValueError:
-        print("error")
+        error_message(2)
+        return False
 
     if user_input == 1:
-        postcode_input = input("Please enter the postcode you would like to lookup:")
+        postcode_input = input("Please enter the postcode you would like to lookup: ")
         data = user_postcode(postcode_input)
         if not data:
-            print("error")
             return False
         weather_lookup(data)
-
     elif user_input == 2:
         data = random_postcode()
         if not data:
             data = random_postcode()
         weather_lookup(data)
+    else:
+        error_message(2)
+        return False
 
-    user_loop = input("Would you like to lookup another postcode? (y/n) ")
+    user_loop = input("\nWould you like to lookup another postcode? (y/n) ")
     print("")
     if user_loop == "y":
         return False
@@ -90,5 +107,3 @@ def main():
 loop = False
 while not loop:
     loop = main()
-
-
