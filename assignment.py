@@ -3,31 +3,18 @@ import requests
 
 
 def random_postcode():
-    postcode_data = {}
-    postcode_data['postcode'] = []
-    postcode_data['country'] = []
-    postcode_data['longitude'] = []
-    postcode_data['latitude'] = []
-    postcode_data['city'] = []
-
     r = requests.get("https://api.postcodes.io/random/postcodes")
     data = r.json()
     data = data['result']
 
-    postcode_data['postcode'] = data['postcode']
-    postcode_data['country'] = data['country']
-    postcode_data['longitude'] = data['longitude']
-    postcode_data['latitude'] = data['latitude']
-    postcode_data['city'] = data['admin_district']
-
-    if postcode_data['longitude'] == "null" or postcode_data['latitude'] == "null":
+    if not data['longitude'] or not data['latitude']:
         return False
 
-    return postcode_data
+    return data
 
 
-def user_postcode(user_postcode):
-    r = requests.get("https://api.postcodes.io/postcodes/"+user_postcode)
+def user_postcode(input_postcode):
+    r = requests.get("https://api.postcodes.io/postcodes/"+input_postcode)
     data = r.json()
     data = data['result']
 
@@ -55,7 +42,7 @@ def print_info(postcode_data, weather_data, weather_units):
     print("")
     print("Postcode Lookup Info")
     print("Country: {0}".format(postcode_data['country']))
-    print("City: {0}".format(postcode_data['city']))
+    print("City: {0}".format(postcode_data['admin_district']))
     print("Postcode: {0}".format(postcode_data['postcode']))
     print("Latitude: {0}".format(postcode_data['latitude']))
     print("Longitude: {0}".format(postcode_data['longitude']))
