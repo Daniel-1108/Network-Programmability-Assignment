@@ -20,7 +20,21 @@ def random_postcode():
     postcode_data['latitude'] = data['latitude']
     postcode_data['city'] = data['admin_district']
 
+    if postcode_data['longitude'] == "null" or postcode_data['latitude'] == "null":
+        return False
+
     return postcode_data
+
+
+def user_postcode(user_postcode):
+    r = requests.get("https://api.postcodes.io/postcodes/"+user_postcode)
+    data = r.json()
+    data = data['result']
+
+    if not data['longitude'] or not data['latitude']:
+        return False
+
+    return data
 
 
 def weather_lookup(postcode_data):
@@ -65,11 +79,29 @@ def main():
     except ValueError:
         print("error")
 
-    if user_input == 2:
-        data = random_postcode()
+    if user_input == 1:
+        postcode_input = input("Please enter the postcode you would like to lookup:")
+        data = user_postcode(postcode_input)
+        if not data:
+            print("error")
+            return False
         weather_lookup(data)
 
+    elif user_input == 2:
+        data = random_postcode()
+        if not data:
+            data = random_postcode()
+        weather_lookup(data)
 
-main()
+    user_loop = input("Would you like to lookup another postcode? (y/n) ")
+    print("")
+    if user_loop == "y":
+        return False
+    return True
+
+
+loop = False
+while not loop:
+    loop = main()
 
 
