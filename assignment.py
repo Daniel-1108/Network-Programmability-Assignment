@@ -22,20 +22,12 @@ def random_postcode():
     return postcode_data
 
 
-def weather_info():
-    with open('weather.json') as f:
-        weather_data = json.load(f)
-
-    for weatherConditions in weather_data['weather']:
-        for key in weatherConditions:
-            print("{0} : {1}".format(key, weatherConditions[key]))
-
-
 def weather_lookup(postcode_data):
     print(postcode_data)
     latitude = str(postcode_data['latitude'])
     longitude = str(postcode_data['longitude'])
-    url = "https://"+"api.met.no/weatherapi/locationforecast/2.0/compact?lat="+latitude+"&lon="+longitude
+    website = "https://api.open-meteo.com/v1/forecast?"
+    url = website+"latitude="+latitude+"&longitude="+longitude+"&current=temperature_2m,wind_speed_10m"
     print(url)
 
     r = requests.get(url)
